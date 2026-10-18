@@ -10,6 +10,7 @@ public class InputRelaySync : MonoBehaviour
 
     GraphicRaycaster Raycaster;
     List<GameObject> DragTargets = new List<GameObject>();
+    [SerializeField] List<GameObject> MouseOnObjects = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -53,6 +54,9 @@ public class InputRelaySync : MonoBehaviour
             DragTargets.Clear();
         }
 
+        //List of GameObjects that are no longer being hovered on, so we must trigger pointerExitHandler 
+        List<GameObject> MouseExitedList = new List<GameObject>(MouseOnObjects);
+
         // process the raycast results
         foreach (var result in results)
         {
@@ -94,17 +98,37 @@ public class InputRelaySync : MonoBehaviour
             // send a mouse down event?
             if (sendMouseDown)
             {
-                if (ExecuteEvents.Execute(result.gameObject, eventData, ExecuteEvents.pointerDownHandler))
-                    break;
-            } // send a mouse up event?
+                ExecuteEvents.Execute(result.gameObject, eventData, ExecuteEvents.pointerDownHandler);
+            }
             else if (sendMouseUp)
             {
                 bool didRun = ExecuteEvents.Execute(result.gameObject, eventData, ExecuteEvents.pointerUpHandler);
                 didRun |= ExecuteEvents.Execute(result.gameObject, eventData, ExecuteEvents.pointerClickHandler);
-
-                if (didRun)
-                    break;
             }
+
+            //Send mouse enter / exit
+            if (MouseOnObjects.Contains(result.gameObject))
+            {
+                //Mouse is still hovering on it
+                MouseExitedList.Remove(result.gameObject);
+            }
+            else
+            {
+                //Mouse just got hovered on
+                MouseOnObjects.Add(result.gameObject);
+                ExecuteEvents.Execute(result.gameObject, eventData, ExecuteEvents.pointerEnterHandler);
+                Debug.Log($"Mouse enter! - {result.gameObject.name}");
+            }
+        }
+
+        //Trigger pointerExitHandler for remaining MouseExitedList objects and remove them from MouseOnObjects
+        foreach (GameObject obj in MouseExitedList)
+        {
+            MouseOnObjects.Remove(obj);
+            PointerEventData eventData = new PointerEventData(EventSystem.current);
+            eventData.position = mousePosition;
+            ExecuteEvents.Execute(obj, eventData, ExecuteEvents.pointerExitHandler);
+            Debug.Log($"Mouse exit! - {obj.name}");
         }
     }
 }

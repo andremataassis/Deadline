@@ -7,15 +7,14 @@ using TMPro;
 public class Numberdle : MonoBehaviour
 {
     int[] answer = new int[5];
-    int[] guess = new int[5] { -1, -1, -1, -1, -1 };
+    int[] guess = new int[5] { 0, 0, 0, 0, 0};
+    [SerializeField] List<GameObject> input_squares = new List<GameObject>();
     private int newNumber;
-    private TMP_InputField[] boxes;
 
     // Start is called before the first frame update
     void Start()
     {
         generateAnswer();
-        boxes = GetComponentsInChildren<TMP_InputField>();
     }
 
     // Update is called once per frame
@@ -23,56 +22,28 @@ public class Numberdle : MonoBehaviour
     {
 
     }
-    public void ReadStringInput(string s)
+    public void IncreaseGuessAt(int i)
     {
-        int number;
-        bool isParsedSuccesfully = int.TryParse(s, out number);
-        if (isParsedSuccesfully)
-        {
-            newNumber = number;
-            PlayAudioHandler.Instance.playRandomAudio("ComputerClick", 5);
-        }
-        else
-        {
-            newNumber = -1;
-        }
+        guess[i] = (guess[i] + 1) % 10;
+        PlayAudioHandler.Instance.playRandomAudio("ComputerClick", 5);
+        input_squares[i].GetComponentInChildren<TMP_Text>().text = guess[i].ToString();
     }
-
-    private void smartSelectNextBox(int i)
+    public void DecreaseGuessAt(int i)
     {
-        boxes[i].DeactivateInputField();
-        if(!(i == 4))
-        {
-            boxes[i + 1].Select();
-        }
-    }
-
-    public void ReadInputSource(int i)
-    {
-        guess[i] = newNumber;
-        smartSelectNextBox(i);
+        guess[i] = ((guess[i] - 1) % 10 + 10) % 10;
+        PlayAudioHandler.Instance.playRandomAudio("ComputerClick", 5);
+        input_squares[i].GetComponentInChildren<TMP_Text>().text = guess[i].ToString();
     }
 
     public void guessSubmitted()
     {
         PlayAudioHandler.Instance.playRandomAudio("ComputerClick", 5);
 
-        //check if guess is valid
-        for (int i = 0; i < guess.Length; i++)
-        {
-            if (guess[i] == -1)
-            {
-                return;
-            }
-        }
-
-        Debug.Log("guessSubmitted ran and passed validity");
-
         int correctSpotsFound = 0;
         //show correct spots
         for(int i = 0; i < answer.Length; i++)
         {
-            Image square = transform.GetChild(i).GetComponentInChildren<Image>();
+            Image square = input_squares[i].GetComponentInChildren<Image>();
             if (guess[i] == answer[i])
             {
                 square.color = Color.green;
@@ -94,6 +65,7 @@ public class Numberdle : MonoBehaviour
     {
         for(int i = 0; i < answer.Length; i++)
         {
+            //0-9
             answer[i] = Random.Range(0, 10);
         }
     }

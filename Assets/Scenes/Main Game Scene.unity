@@ -10180,6 +10180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanvasTransform: {fileID: 1747810081}
+  MouseOnObjects: []
 --- !u!114 &1747810083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10193,8 +10194,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tasks:
-  - {fileID: 8163836533188357480, guid: 10c954a28d90e014bbb7cabd158dabf9, type: 3}
   - {fileID: 8163836533188357480, guid: 53d6d324c58d9554bb6d824e9731eb3d, type: 3}
+  - {fileID: 8163836533188357480, guid: 10c954a28d90e014bbb7cabd158dabf9, type: 3}
   - {fileID: 8163836533188357480, guid: 54c1e99b49a9fbf4aa24cf2075f4af8a, type: 3}
   currentTaskNumber: 0
   waitBeforeTaskDone: 0.5
