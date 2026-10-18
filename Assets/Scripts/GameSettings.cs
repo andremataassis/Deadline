@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GameSettings : MonoBehaviour
 {
     public static GameSettings Instance;
-    public static float brightness = 0.3f;
+    public static float brightness = 0.8f;
     public Light mainLight;
     public Slider brightnessSlider;
 
